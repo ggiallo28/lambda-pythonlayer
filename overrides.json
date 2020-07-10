@@ -1,9 +1,6 @@
 {
 	"CREATE": {
-		"/Requirements": [
-			"small"
-		],
-		"/Name": "lambda-layer-test",
+		"/Requirements": ["small"],
 		"/S3Bucket": "alexa-tim-poc"
 	}
 }

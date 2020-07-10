@@ -15,7 +15,6 @@
         "Requirements": {
             "description": "List of packages to install.",
             "type": "array",
-            "insertionOrder": false,
             "minItems": 1,
             "uniqueItems": true,
             "items": {
@@ -23,19 +22,25 @@
             }
         },
         "LayerArn": {
-            "type": "string"
+            "type": "string",
+            "description": "Layer Arn Property",
+            "pattern": "arn:(aws[a-zA-Z-]*)?:lambda:[a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-\\d{1}:\\d{12}:layer:[a-zA-Z0-9-_]+(:(\\$LATEST|[a-zA-Z0-9-_]+))?"
         },
         "LayerVersionArn": {
-            "type": "string"
+            "type": "string",
+            "description": "Layer Arn Property with Version.",
+            "pattern": "arn:(aws[a-zA-Z-]*)?:lambda:[a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-\\d{1}:\\d{12}:layer:[a-zA-Z0-9-_]+(:(\\$LATEST|[a-zA-Z0-9-_]+))?"
         },
         "Version": {
-            "type": "string"
+            "type": "string",
+            "description": "Layer ersion.",
+            "pattern": "[0-9]*"
         }
     },
     "required": [
         "Name",
-        "Requirements",
-        "S3Bucket"
+         "S3Bucket",
+        "Requirements"
     ],
     "readOnlyProperties": [
         "/properties/LayerArn",
@@ -50,28 +55,33 @@
         "create": {
             "permissions": [
                 "lambda:PublishLayerVersion",
+                "lambda:ListLayerVersions",
                 "s3:*"
             ]
         },
         "read": {
             "permissions": [
-                "lambda:GetLayerVersion"
+                "lambda:GetLayerVersion",
+                "lambda:ListLayerVersions"
             ]
         },
         "update": {
             "permissions": [
                 "lambda:PublishLayerVersion",
-                "s3:*"
+                "s3:*",
+                "lambda:ListLayerVersions"
             ]
         },
         "delete": {
             "permissions": [
-                "lambda:DeleteLayerVersion"
+                "lambda:DeleteLayerVersion",
+                "lambda:ListLayerVersions"
             ]
         },
         "list": {
             "permissions": [
-                "lambda:ListLayers"
+                "lambda:ListLayers",
+                "lambda:ListLayerVersions"
             ]
         }
     }

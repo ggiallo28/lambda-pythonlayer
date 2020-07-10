@@ -78,13 +78,13 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 #### LayerArn
 
-Returns the <code>LayerArn</code> value.
+Layer Arn Property
 
 #### LayerVersionArn
 
-Returns the <code>LayerVersionArn</code> value.
+Layer Arn Property with Version.
 
 #### Version
 
-Returns the <code>Version</code> value.
+Layer ersion.
 

@@ -25,11 +25,11 @@ Resources:
                 Action:
                 - "lambda:DeleteLayerVersion"
                 - "lambda:GetLayerVersion"
+                - "lambda:ListLayerVersions"
                 - "lambda:ListLayers"
                 - "lambda:PublishLayerVersion"
                 - "s3:*"
                 Resource: "*"
-
 Outputs:
   ExecutionRoleArn:
     Value:

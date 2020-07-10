@@ -5,6 +5,8 @@
     "entrypoint": "mug_lambda_pythonlayer.handlers.resource",
     "testEntrypoint": "mug_lambda_pythonlayer.handlers.test_entrypoint",
     "settings": {
-        "use_docker": true
+        "use_docker": true,
+        "protocolVersion": "2.0.0"
+        
     }
 }

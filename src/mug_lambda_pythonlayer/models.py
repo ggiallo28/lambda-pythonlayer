@@ -26,7 +26,7 @@ T = TypeVar("T")
 
 def set_or_none(value: Optional[Sequence[T]]) -> Optional[AbstractSet[T]]:
     if value:
-        return list(set(value))
+        return set(value)
     return None
 
 
@@ -41,7 +41,7 @@ class ResourceHandlerRequest(BaseResourceHandlerRequest):
 class ResourceModel(BaseModel):
     Name: Optional[str]
     S3Bucket: Optional[str]
-    Requirements: Optional[AbstractSet[str]]
+    Requirements: Optional[Sequence[str]]
     LayerArn: Optional[str]
     LayerVersionArn: Optional[str]
     Version: Optional[str]
@@ -58,7 +58,7 @@ class ResourceModel(BaseModel):
         return cls(
             Name=json_data.get("Name"),
             S3Bucket=json_data.get("S3Bucket"),
-            Requirements=set_or_none(json_data.get("Requirements")),
+            Requirements=json_data.get("Requirements"),
             LayerArn=json_data.get("LayerArn"),
             LayerVersionArn=json_data.get("LayerVersionArn"),
             Version=json_data.get("Version"),

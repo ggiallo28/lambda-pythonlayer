@@ -30,13 +30,17 @@ class LambdaLayer:
     def __init__(self, state, session):
         self.state = state
         self.client = session.client("lambda")
+        print('================================', state.Requirements)
         self.zip_path = f'/tmp/{state.Name}.zip'
         self.requirements = ','.join(state.Requirements)
         self.s3_path = f'/{state.S3Bucket}/{state.Name}.zip'
         self.layers_list = self.client.list_layer_versions(LayerName=self.state.Name)
 
-    def exists(self):
-        return len(self.layers_list['LayerVersions']) > 0
+    def exists(self, Name=None):
+        if Name:
+            return len(self.client.list_layer_versions(LayerName=Name)['LayerVersions']) > 0
+        else:
+            return len(self.layers_list['LayerVersions']) > 0
 
     def _init_libs(self):
         shutil.rmtree(LIBS, ignore_errors=True)
@@ -80,12 +84,21 @@ class LambdaLayer:
         )
         return response['LayerArn'], response['LayerVersionArn'], str(response['Version'])
 
-    def delete(self):
-        for layer in self.layers_list['LayerVersions']:               
-            _ = self.client.delete_layer_version(
-                LayerName=self.state.Name,
-                VersionNumber=int(layer['Version'])
-            )
+    def delete(self, Name=None):
+        if Name:
+            layers_list = self.client.list_layer_versions(LayerName=Name)
+            for layer in layers_list['LayerVersions']:               
+                _ = self.client.delete_layer_version(
+                    LayerName=self.state.Name,
+                    VersionNumber=int(layer['Version'])
+                ) 
+        else:
+            for layer in self.layers_list['LayerVersions']:               
+                _ = self.client.delete_layer_version(
+                    LayerName=self.state.Name,
+                    VersionNumber=int(layer['Version'])
+                )
+        
 
     def create_model(self):
         return [ResourceModel(
@@ -118,8 +131,14 @@ def create_handler(
     \____/_/ |_/_____/_/  |_/_/ /_____/   
                                           
     """)
+    
     layer = LambdaLayer(model, session)
-
+    print(model)
+    
+    if (hasattr(model, 'Version') and model.Version != None or\
+            hasattr(model, 'LayerVersionAr') and model.LayerVersionAr != None or\
+                 hasattr(model, 'LayerArn') and model.LayerArn != None):
+            raise exceptions.InvalidRequest(TYPE_NAME, model.Name)
     if layer.exists():
         raise exceptions.AlreadyExists(TYPE_NAME, model.Name)
 
@@ -152,14 +171,15 @@ def delete_handler(
     /_____/_____/_____/_____/ /_/ /_____/                                    
                                           
     """)
-
+    
     layer = LambdaLayer(model, session)
+    
     if layer.exists():
         layer.delete()
     else:
-        raise exceptions.NotFound(TYPE_NAME, model.Name)   
+        raise exceptions.NotFound(TYPE_NAME, model.Name)
 
-    return ProgressEvent(status=OperationStatus.SUCCESS, resourceModel=model)
+    return ProgressEvent(status=OperationStatus.SUCCESS)
 
 @resource.handler(Action.UPDATE)
 def update_handler(
@@ -179,11 +199,17 @@ def update_handler(
     / /_/ / ____/ /_/ / ___ |/ / / /___   
     \____/_/   /_____/_/  |_/_/ /_____/   
     """)
-
+    
     layer = LambdaLayer(model, session)
-    if layer.exists():
+    try:
+        if request.previousResourceState.Name != request.desiredResourceState.Name:
+            layer.delete(request.previousResourceState.Name)
+    except:
+        pass
+    
+    if layer.exists(request.previousResourceState.Name):
 
-        layer.delete()
+        layer.delete(request.previousResourceState.Name)
         layer.install()
         layer.package()
 
