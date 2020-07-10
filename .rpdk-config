@@ -1,0 +1,10 @@
+{
+    "typeName": "MuG::Lambda::PythonLayer",
+    "language": "python37",
+    "runtime": "python3.7",
+    "entrypoint": "mug_lambda_pythonlayer.handlers.resource",
+    "testEntrypoint": "mug_lambda_pythonlayer.handlers.test_entrypoint",
+    "settings": {
+        "use_docker": true
+    }
+}

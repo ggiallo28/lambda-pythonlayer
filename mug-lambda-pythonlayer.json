@@ -1,0 +1,78 @@
+{
+    "typeName": "MuG::Lambda::PythonLayer",
+    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "properties": {
+        "Name": {
+            "description": "A unique Name for the AWS Lambda Layer",
+            "type": "string",
+            "pattern": "^[A-Z]{3,5}[0-9]{8}-[0-9]{4}$"
+        },
+        "S3Bucket": {
+            "description": "The name of the Amazon S3 Bucket used to upload assets.",
+            "type": "string"
+        },
+        "Requirements": {
+            "description": "List of packages to install.",
+            "type": "array",
+            "insertionOrder": false,
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "LayerArn": {
+            "type": "string"
+        },
+        "LayerVersionArn": {
+            "type": "string"
+        },
+        "Version": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "Name",
+        "Requirements",
+        "S3Bucket"
+    ],
+    "readOnlyProperties": [
+        "/properties/LayerArn",
+        "/properties/LayerVersionArn",
+        "/properties/Version"
+    ],
+    "primaryIdentifier": [
+        "/properties/Name"
+    ],
+    "additionalProperties": false,
+    "handlers": {
+        "create": {
+            "permissions": [
+                "lambda:PublishLayerVersion",
+                "s3:*"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "lambda:GetLayerVersion"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "lambda:PublishLayerVersion",
+                "s3:*"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "lambda:DeleteLayerVersion"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "lambda:ListLayers"
+            ]
+        }
+    }
+}
